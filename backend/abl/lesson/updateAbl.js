@@ -23,26 +23,40 @@ const schema = {
 async function UpdateAbl(req, res) {
     try {
         let lesson = req.body;
-        
+
         if (!ajv.validate(schema, lesson)) {
             console.error('Validation errors:', ajv.errors);
             res.status(400).json({ message: 'Invalid lesson data', code: "invalidLessonParams", errors: ajv.errors });
             return;
         }
 
+        const existingLesson = lessonDao.get(lesson.id);
+        if (!existingLesson) {
+            res.status(404).json({ message: 'Lesson not found', code: "lessonNotFound" });
+            return;
+        }
+
+        const mergedLesson = { ...existingLesson, ...lesson };
+        const allLessons = lessonDao.list();
+        const overlapping = allLessons.find(other =>
+            other.id !== mergedLesson.id &&
+            other.day === mergedLesson.day &&
+            mergedLesson.timeFrom < existing.timeTo && existing.timeFrom < mergedLesson.timeTo
+        );
+        if (overlapping) {
+            res.status(409).json({ message: 'Lesson time overlaps with an existing lesson', code: "lessonTimeOverlap" });
+            return;
+        }
+
         let updatedLesson;
-        
+
         try {
             updatedLesson = lessonDao.update(lesson);
         } catch (error) {
             res.status(400).json({ ...error, message: 'Failed to update lesson', code: error.code || "failedToUpdateLesson", lesson: error.lesson || null });
             return;
         }
-    
-        if (!updatedLesson) {
-            res.status(404).json({ message: 'Lesson not found', code: "lessonNotFound" });
-            return;
-        }
+
 
         res.json(updatedLesson);
     } catch (error) {

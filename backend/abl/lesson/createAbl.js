@@ -22,13 +22,23 @@ const schema = {
 async function CreateAbl(req, res) {
     try {
         let lesson = req.body;
-        
+
         if (!ajv.validate(schema, lesson)) {
             console.error('Validation errors:', ajv.errors);
             res.status(400).json({ message: 'Invalid lesson param data', code: "invalidLessonParams", errors: ajv.errors });
             return;
         }
- 
+
+        const allLessons = lessonDao.list();
+        const overlapping = allLessons.find(existing =>
+            existing.day === lesson.day &&
+            lesson.timeFrom < existing.timeTo && existing.timeFrom < lesson.timeTo
+        );
+        if (overlapping) {
+            res.status(409).json({ message: 'Lesson time overlaps with an existing lesson', code: "lessonTimeOverlap" });
+            return;
+        }
+
         const createdLesson = lessonDao.create(lesson);
         res.status(201).json(createdLesson);
 
