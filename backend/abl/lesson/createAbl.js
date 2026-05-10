@@ -9,7 +9,7 @@ const schema = {
         title: { type: "string" },
         description: { type: "string" },
         teacher: { type: "string" },
-        day: { type: "integer" },
+        day: { type: "integer", minimum: 0, maximum: 6 },
         timeFrom: { type: "string", pattern: "^([01]\\d|2[0-3]):?([0-5]\\d)$" },
         timeTo: { type: "string", pattern: "^([01]\\d|2[0-3]):?([0-5]\\d)$" },
         capacity: { type: "integer" }

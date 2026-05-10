@@ -69,6 +69,7 @@ function update(participant) {
         return updatedParticipant;
     } catch (error) {
         if (error.code === "participantNotFound") throw error;
+        if (error.code === "participantEmailExists") throw error;
         console.error('Error updating participant:', error);
         throw { message: 'Failed to update participant', code: "failedToUpdateParticipant", participant: error.participant };
     }

@@ -9,7 +9,7 @@ const schema = {
         title: { type: "string" },
         description: { type: "string" },
         teacher: { type: "string" },
-        day: { type: "integer" },
+        day: { type: "integer", minimum: 0, maximum: 6 },
         timeFrom: { type: "string", pattern: "^([01]\\d|2[0-3]):?([0-5]\\d)$" },
         timeTo: { type: "string", pattern: "^([01]\\d|2[0-3]):?([0-5]\\d)$" },
         capacity: { type: "integer" },
@@ -41,7 +41,7 @@ async function UpdateAbl(req, res) {
         const overlapping = allLessons.find(other =>
             other.id !== mergedLesson.id &&
             other.day === mergedLesson.day &&
-            mergedLesson.timeFrom < existing.timeTo && existing.timeFrom < mergedLesson.timeTo
+            mergedLesson.timeFrom < other.timeTo && other.timeFrom < mergedLesson.timeTo
         );
         if (overlapping) {
             res.status(409).json({ message: 'Lesson time overlaps with an existing lesson', code: "lessonTimeOverlap" });

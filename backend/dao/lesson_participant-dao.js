@@ -22,8 +22,8 @@ function list() {
 
 function create (lessonId, participantId) {
     try {
-        console.log(lessonDao.get(lessonId));
-        if (!lessonDao.get(lessonId)) {
+        const lesson = lessonDao.get(lessonId);
+        if (!lesson) {
             throw { message: 'Lesson not found', code: "lessonNotFound", lessonParticipant: { lessonId, participantId } };
         }
 
@@ -34,6 +34,11 @@ function create (lessonId, participantId) {
         const lpList = list();
         if (lpList.some(lp => lp.lessonId === lessonId && lp.participantId === participantId)) {
             throw { message: 'Participant is already enrolled in this lesson', code: "participantAlreadyEnrolled", lessonParticipant: { lessonId, participantId } };
+        }
+
+        const enrolled = lpList.filter(lp => lp.lessonId === lessonId).length;
+        if (enrolled >= lesson.capacity) {
+            throw { message: 'Lesson is at full capacity', code: "lessonAtCapacity", lessonParticipant: { lessonId, participantId } };
         }
 
         let lessonParticipant = { lessonId, participantId };
