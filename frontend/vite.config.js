@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,11 +10,35 @@ export default defineConfig({
         scss: {
           silenceDeprecations: [
             'import',
-            'mixed-decls',
             'color-functions',
             'global-builtin',
+            'if-function',
           ],
         },
      },
+  },
+
+  server: {
+    proxy: {
+      '/participant': {
+        target: 'http://localhost:3000',
+        bypass: (req) => {
+          // Let browser page navigations (HTML requests) fall through to the SPA
+          if (req.headers.accept?.includes('text/html')) return '/index.html'
+        },
+      },
+      '/lesson': {
+        target: 'http://localhost:3000',
+        bypass: (req) => {
+          if (req.headers.accept?.includes('text/html')) return '/index.html'
+        },
+      },
+      '/lesson-participant': {
+        target: 'http://localhost:3000',
+        bypass: (req) => {
+          if (req.headers.accept?.includes('text/html')) return '/index.html'
+        },
+      },
+    },
   },
 })

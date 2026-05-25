@@ -85,7 +85,9 @@ function listByParticipant(participantId) {
         const files = fs.readdirSync(lpDirectory);
         const lessonParticipants = files.filter(file => file.endsWith(`_${participantId}.json`)).map(file => {
             const lpData = fs.readFileSync(join(lpDirectory, file), 'utf8');
-            return JSON.parse(lpData);
+            const lp = JSON.parse(lpData);
+            const lesson = lessonDao.get(lp.lessonId);
+            return { ...lp, lesson: lesson };
         });
         return lessonParticipants;
     } catch (error) {
