@@ -28,3 +28,4 @@ package-lock.json
 gradle-app.setting
 gradlew
 gradlew.bat
+backend/dao/storage/

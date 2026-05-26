@@ -1,8 +1,10 @@
 import { Routes, Route, NavLink } from 'react-router-dom';
+import { useState } from 'react';
 import Dashboard from './Dashboard';
 import Participants from './Participant/Participants';
 import Lessons from './Lesson/Lessons';
 import LessonDetail from './Lesson/LessonDetail';
+import LoginToLessonModal from './LessonParticipant/LoginToLessonModal';
 
 
 const navigation = [
@@ -16,23 +18,24 @@ function classNames(...classes) {
 }
 
 function App() {
+  const [showLogin, setShowLogin] = useState(false);
 
   return (
 
-    <div className="container"> 
-      <header className="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom"> 
-        <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"> 
-        <svg className="bi me-2" width="40" height="32" aria-hidden="true"><use href="/favicon.svg"></use></svg> 
-        <span className="fs-4">Zapiste.se</span> 
-        </a> 
-        
-        <ul className="nav nav-pills"> 
-          <li className="nav-item"><a href="/" className="nav-link active" aria-current="page">Dashboard</a></li> 
-          <li className="nav-item"><a href="/participant" className="nav-link">Účastníci</a></li> 
-          <li className="nav-item"><a href="/lesson" className="nav-link">Lekce</a></li> 
-          <li className="nav-item"><a href="#" className="nav-link">FAQs</a></li> 
-          <li className="nav-item"><a href="#" className="nav-link">About</a></li> 
-        </ul> 
+    <div className="container">
+      <LoginToLessonModal show={showLogin} onHide={() => setShowLogin(false)} />
+      <header className="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <svg className="bi me-2" width="40" height="32" aria-hidden="true"><use href="/favicon.svg"></use></svg>
+        <span className="fs-4">Zapiste.se</span>
+        </a>
+
+        <ul className="nav nav-pills">
+          <li className="nav-item"><button className="nav-link btn btn-link" onClick={() => setShowLogin(true)}>+ Přihlásit na lekci</button></li>
+          <li className="nav-item"><NavLink to="/" end className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>Dashboard</NavLink></li>
+          <li className="nav-item"><NavLink to="/participant" className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>Účastníci</NavLink></li>
+          <li className="nav-item"><NavLink to="/lesson" className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>Lekce</NavLink></li>
+        </ul>
       </header> 
 
       <Routes>

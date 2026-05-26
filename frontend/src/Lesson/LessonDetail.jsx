@@ -8,6 +8,7 @@ import { Container, Row, Col, Badge, Button } from "react-bootstrap";
 import { getDay } from "../utils/days";
 import { Icon } from "@mdi/react";
 import { mdiPencilBoxOutline, mdiDeleteOutline } from "@mdi/js";
+import LoginToLessonModal from '../LessonParticipant/LoginToLessonModal';
 
 function LessonDetailContent() {
     const { handlerMap } = useContext(LessonContext);
@@ -20,6 +21,7 @@ function LessonDetailContent() {
     const [error, setError] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const fetchLesson = () => {
         if (!lessonId) return;
@@ -46,7 +48,7 @@ function LessonDetailContent() {
         fetchLesson();
     }, [lessonId]);
 
-    useEffect(() => {
+    const fetchParticipants = () => {
         if (!lessonId) return;
         fetch(`/lesson-participant/list-by-lesson?lessonId=${lessonId}`)
             .then((res) => {
@@ -55,6 +57,10 @@ function LessonDetailContent() {
             })
             .then((data) => setParticipants(data))
             .catch(() => setParticipants([]));
+    };
+
+    useEffect(() => {
+        fetchParticipants();
     }, [lessonId]);
 
     return (
@@ -115,7 +121,13 @@ function LessonDetailContent() {
                     )}
                 </Row>
                 <Row className="mt-4">
-                    <Col className="me-auto col-auto"><Button variant="success">Přihlásit se na lekci</Button></Col>
+                    <Col className="me-auto col-auto"><Button variant="success" onClick={() => setShowLoginModal(true)}>Přihlásit se na lekci</Button></Col>
+                    <LoginToLessonModal
+                        show={showLoginModal}
+                        onHide={() => setShowLoginModal(false)}
+                        onSuccess={() => { setShowLoginModal(false); fetchLesson(); fetchParticipants(); }}
+                        defaultLessonId={lessonId}
+                    />
                     <Col className="col-auto">
                         <div className="btn-group" role="group">
                             <Button variant="primary" size="sm" onClick={() => setShowEditModal(true)}><Icon path={mdiPencilBoxOutline} size={1} /></Button>

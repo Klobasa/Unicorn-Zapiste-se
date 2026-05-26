@@ -86,8 +86,8 @@ const LessonProvider = ({ children }) => {
     };
 
     return (
-        <LessonContext.Provider value={{ 
-            data, error, state, 
+        <LessonContext.Provider value={{
+            data, error, state,
             handlerMap: { add: handleCreate, update: handleUpdate, delete: handleDelete }
         }}>
             {children}

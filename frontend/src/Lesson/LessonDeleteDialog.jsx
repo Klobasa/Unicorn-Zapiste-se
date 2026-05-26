@@ -45,14 +45,14 @@ function LessonDeleteDialog({ lesson, setLesson, handleDelete, handleDeleteWithU
 
                 {lessonParticipant.length > 0 && (
                     <Button variant="danger" onClick={handleDeleteWithUnregister}>
-                        <Icon path={mdiDeleteAlertOutline} size={1} />
-                        Odhlásit účastníky a smazat
+                        <Icon path={mdiDeleteAlertOutline} size={0.9} />
+                       {" "}Odhlásit účastníky a smazat
                     </Button>
                 )}
 
                 <Button variant="warning" onClick={handleDelete} disabled={lessonParticipant.length > 0}>
-                    <Icon path={mdiDeleteOutline} size={1} />
-                    Smazat
+                    <Icon path={mdiDeleteOutline} size={0.9} />
+                    {" "}Smazat
                 </Button>
             </Modal.Footer>
         </Modal>
