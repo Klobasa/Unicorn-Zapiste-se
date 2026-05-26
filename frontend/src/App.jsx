@@ -1,6 +1,8 @@
-import { Routes, Route, NavLink } from 'react-router-dom'
-import Dashboard from './Dashboard'
-import Participants from './Participant/Participants'
+import { Routes, Route, NavLink } from 'react-router-dom';
+import Dashboard from './Dashboard';
+import Participants from './Participant/Participants';
+import Lessons from './Lesson/Lessons';
+import LessonDetail from './Lesson/LessonDetail';
 
 
 const navigation = [
@@ -36,6 +38,8 @@ function App() {
       <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/participant" element={<Participants />} />
+          <Route path="/lesson" element={<Lessons />} />
+          <Route path="/lesson/detail" element={<LessonDetail />} />
         </Routes>
     </div>
 

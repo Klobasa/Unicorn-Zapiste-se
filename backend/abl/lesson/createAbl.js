@@ -2,6 +2,7 @@ const Ajv = require("ajv");
 const ajv = new Ajv();
 
 const lessonDao = require("../../dao/lesson-dao");
+const lpDao = require("../../dao/lesson_participant-dao");
 
 const schema = {
     type: "object",
@@ -40,7 +41,8 @@ async function CreateAbl(req, res) {
         }
 
         const createdLesson = lessonDao.create(lesson);
-        res.status(201).json(createdLesson);
+        const enrolledCount = lpDao.listByLesson(createdLesson.id).length;
+        res.json({ ...createdLesson, enrolled: enrolledCount });
 
     } catch (error) {
         res.status(500).json({ message: error.message, code: error.code || "failedToCreateLesson", lesson: error.lesson || null });
