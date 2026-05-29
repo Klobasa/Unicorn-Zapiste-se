@@ -108,7 +108,7 @@ function LessonForm({ lessonData, onSuccess }) {
                     />
                 </Col>
                 <Col auto>
-                    <Form.Label className="mt-1">Do</Form.Label> 
+                    <Form.Label className="mt-1">Do</Form.Label>
                     <Form.Control
                         type="time"
                         value={timeTo}

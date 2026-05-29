@@ -1,8 +1,10 @@
 import { createContext, useState, useEffect } from "react";
+import { useToast } from "../ToastProvider";
 
 export const ParticipantContext = createContext();
 
 const ParticipantProvider = ({ children }) => {
+    const { addToast } = useToast();
     const [data, setData] = useState();
     const [error, setError] = useState();
     const [state, setState] = useState();
@@ -37,9 +39,12 @@ const ParticipantProvider = ({ children }) => {
             const newParticipant = await response.json();
             setData((currentData) => ({...currentData,itemList: [...currentData.itemList, newParticipant]}));
             setState("success");
+            addToast("Účastník byl úspěšně přidán.", "success");
         } else {
-            setError(response.statusText);
+            const body = await response.json().catch(() => ({}));
+            setError(body.message ?? response.statusText);
             setState("errorCreating");
+            addToast("Nepodařilo se přidat účastníka.", "danger", body.message);
         }
     };
 
@@ -60,9 +65,12 @@ const ParticipantProvider = ({ children }) => {
                 return { ...currentData, itemList: updatedList };
             });
             setState("success");
+            addToast("Účastník byl úspěšně upraven.", "success");
         } else {
-            setError(response.statusText);
+            const body = await response.json().catch(() => ({}));
+            setError(body.message ?? response.statusText);
             setState("errorUpdating");
+            addToast("Nepodařilo se upravit účastníka.", "danger", body.message);
         }
     };
 
@@ -80,9 +88,12 @@ const ParticipantProvider = ({ children }) => {
                 return { ...currentData, itemList: updatedList };
             });
             setState("success");
+            addToast("Účastník byl úspěšně smazán.", "success");
         } else {
-            setError(response.statusText);
+            const body = await response.json().catch(() => ({}));
+            setError(body.message ?? response.statusText);
             setState("errorDeleting");
+            addToast("Nepodařilo se smazat účastníka.", "danger", body.message);
         }
     };
 

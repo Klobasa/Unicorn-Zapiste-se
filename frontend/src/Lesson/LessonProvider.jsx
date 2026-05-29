@@ -1,8 +1,10 @@
 import { createContext, useState, useEffect } from "react";
+import { useToast } from "../ToastProvider";
 
 export const LessonContext = createContext();
 
 const LessonProvider = ({ children }) => {
+    const { addToast } = useToast();
     const [data, setData] = useState();
     const [error, setError] = useState();
     const [state, setState] = useState();
@@ -37,10 +39,13 @@ const LessonProvider = ({ children }) => {
             const newLesson = await response.json();
             setData((currentData) => ({ ...currentData, itemList: [...currentData.itemList, newLesson] }));
             setState("success");
+            addToast("Lekce byla úspěšně přidána.", "success");
             return true;
         } else {
-            setError(response.statusText);
+            const body = await response.json().catch(() => ({}));
+            setError(body.message ?? response.statusText);
             setState("errorCreating");
+            addToast("Nepodařilo se přidat lekci.", "danger", body.message);
             return false;
         }
     };
@@ -58,10 +63,13 @@ const LessonProvider = ({ children }) => {
             setData((currentData) => ({ ...currentData, itemList: currentData.itemList.map((item) =>
                 item.id === updatedLesson.id ? updatedLesson : item) }));
             setState("success");
+            addToast("Lekce byla úspěšně upravena.", "success");
             return true;
         } else {
-            setError(response.statusText);
+            const body = await response.json().catch(() => ({}));
+            setError(body.message ?? response.statusText);
             setState("errorUpdating");
+            addToast("Nepodařilo se upravit lekci.", "danger", body.message);
             return false;
         }
     };
@@ -77,10 +85,13 @@ const LessonProvider = ({ children }) => {
         if (response.ok) {
             setData((currentData) => ({ ...currentData, itemList: currentData.itemList.filter((item) => item.id !== id) }));
             setState("success");
+            addToast("Lekce byla úspěšně smazána.", "success");
             return true;
         } else {
-            setError(response.statusText);
+            const body = await response.json().catch(() => ({}));
+            setError(body.message ?? response.statusText);
             setState("errorDeleting");
+            addToast("Nepodařilo se smazat lekci.", "danger", body.message);
             return false;
         }
     };

@@ -30,6 +30,11 @@ async function CreateAbl(req, res) {
             return;
         }
 
+        if (lesson.timeFrom >= lesson.timeTo) {
+            res.status(400).json({ message: 'Čas začátku musí být před časem konce', code: "invalidTimeRange" });
+            return;
+        }
+
         const allLessons = lessonDao.list();
         const overlapping = allLessons.find(existing =>
             existing.day === lesson.day &&

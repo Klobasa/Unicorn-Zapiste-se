@@ -9,9 +9,11 @@ import { getDay } from "../utils/days";
 import { Icon } from "@mdi/react";
 import { mdiPencilBoxOutline, mdiDeleteOutline } from "@mdi/js";
 import LoginToLessonModal from '../LessonParticipant/LoginToLessonModal';
+import { useToast } from "../ToastProvider";
 
 function LessonDetailContent() {
     const { handlerMap } = useContext(LessonContext);
+    const { addToast } = useToast();
     const [searchParams] = useSearchParams();
     const lessonId = searchParams.get("lessonId");
     const navigate = useNavigate();
@@ -34,14 +36,19 @@ function LessonDetailContent() {
             .catch((err) => setError(err.message));
     };
 
-    const handleUnregister = (lessonId, participantId) => {
-        fetch("/lesson-participant/delete", {
+    const handleUnregister = async (lessonId, participantId) => {
+        const res = await fetch("/lesson-participant/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ lessonId, participantId }),
-        }).then((res) => {
-            if (res.ok) setParticipants((prev) => prev.filter((x) => x.participantId !== participantId));
         });
+        if (res.ok) {
+            setParticipants((prev) => prev.filter((x) => x.participantId !== participantId));
+            addToast("Účastník byl úspěšně odhlášen z lekce.", "success");
+        } else {
+            const body = await res.json().catch(() => ({}));
+            addToast("Nepodařilo se odhlásit účastníka.", "danger", body.message);
+        }
     };
 
     useEffect(() => {

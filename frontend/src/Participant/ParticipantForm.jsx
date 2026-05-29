@@ -58,12 +58,13 @@ function ParticipantForm({participantData}) {
         <div className="col-2">
             <div className="btn-group" role="group">
                 {!participantData?.id ? (
-                <Button variant="success" size="sm" onClick={() => handlerMap.add({ name, surname, email })}>
+                <Button variant="success" size="sm" onClick={() => handlerMap.add({ name, surname, email })}
+                    disabled={state === "creating" || !name || !email}>
                     <Icon path={state === "creating" ? mdiLoading : mdiPlus} spin={state === "creating"} size={1} />
                 </Button>
                 ) : (
-                <Button variant="primary" size="sm" onClick={() => handlerMap.update({ id: participantData.id, name, surname, email })
-                } disabled={isUpdating || (participantData.name === name && participantData.surname === surname && participantData.email === email)}>
+                <Button variant="primary" size="sm" onClick={() => handlerMap.update({ id: participantData.id, name, surname, email })} 
+                    disabled={isUpdating || (participantData.name === name && participantData.surname === surname && participantData.email === email)}>
                     <Icon path={isUpdating ? mdiLoading : mdiCheckBold} spin={isUpdating} size={1} />
                 </Button>
                 )}

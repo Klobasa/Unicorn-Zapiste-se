@@ -1,14 +1,16 @@
 import { useContext, useState } from 'react';
 import { LessonContext } from '../Lesson/LessonProvider';
 import { ParticipantContext } from '../Participant/ParticipantProvider';
-import { Form, Button, Row, Col, Alert } from "react-bootstrap";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import { Icon } from "@mdi/react";
 import { mdiLoading, mdiAccountPlus } from "@mdi/js";
 import { getDay } from "../utils/days";
+import { useToast } from "../ToastProvider";
 
 function LoginToLessonForm({ defaultLessonId, onSuccess }) {
     const { data: lessonData } = useContext(LessonContext);
     const { data: participantData } = useContext(ParticipantContext);
+    const { addToast } = useToast();
 
     const [lessonId, setLessonId] = useState(defaultLessonId ?? "");
     const [participantId, setParticipantId] = useState("");
@@ -16,7 +18,6 @@ function LoginToLessonForm({ defaultLessonId, onSuccess }) {
     const [newParticipantSurname, setNewParticipantSurname] = useState("");
     const [newParticipantEmail, setNewParticipantEmail] = useState("");
     const [busy, setBusy] = useState(false);
-    const [error, setError] = useState(null);
 
     const allLessons = lessonData?.itemList ?? [];
 
@@ -26,7 +27,6 @@ function LoginToLessonForm({ defaultLessonId, onSuccess }) {
     const handleSubmit = async () => {
         if (!canSubmit) return;
         setBusy(true);
-        setError(null);
         try {
             let resolvedParticipantId = participantId;
 
@@ -37,8 +37,8 @@ function LoginToLessonForm({ defaultLessonId, onSuccess }) {
                     body: JSON.stringify({ name: newParticipantName, surname: newParticipantSurname, email: newParticipantEmail }),
                 });
                 if (!createRes.ok) {
-                    const body = await createRes.json();
-                    setError(body.message ?? createRes.statusText);
+                    const body = await createRes.json().catch(() => ({}));
+                    addToast("Nepodařilo se vytvořit účastníka.", "danger", body.message);
                     return;
                 }
                 const newParticipant = await createRes.json();
@@ -51,13 +51,14 @@ function LoginToLessonForm({ defaultLessonId, onSuccess }) {
                 body: JSON.stringify({ lessonId, participantId: resolvedParticipantId }),
             });
             if (res.ok) {
+                addToast("Účastník byl úspěšně přihlášen na lekci.", "success");
                 onSuccess?.();
             } else {
-                const body = await res.json();
-                setError(body.message ?? res.statusText);
+                const body = await res.json().catch(() => ({}));
+                addToast("Nepodařilo se přihlásit na lekci.", "danger", body.message);
             }
         } catch {
-            setError("Nepodařilo se připojit k serveru.");
+            addToast("Nepodařilo se připojit k serveru.", "danger");
         } finally {
             setBusy(false);
         }
@@ -65,7 +66,6 @@ function LoginToLessonForm({ defaultLessonId, onSuccess }) {
 
     return (
         <Form>
-            {error && <Alert variant="danger">{error}</Alert>}
             <Row className="mb-1">
                 <Col>
                     <Form.Label>Účastník:</Form.Label>

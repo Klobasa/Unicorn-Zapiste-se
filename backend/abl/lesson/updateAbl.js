@@ -37,6 +37,12 @@ async function UpdateAbl(req, res) {
         }
 
         const mergedLesson = { ...existingLesson, ...lesson };
+
+        if (mergedLesson.timeFrom >= mergedLesson.timeTo) {
+            res.status(400).json({ message: 'Čas začátku musí být před časem konce', code: "invalidTimeRange" });
+            return;
+        }
+
         const allLessons = lessonDao.list();
         const overlapping = allLessons.find(other =>
             other.id !== mergedLesson.id &&
